@@ -4,23 +4,23 @@ self.__precacheManifest = [
     "url": "/FaceRecognition-App/static/js/runtime~main.7ed873ce.js"
   },
   {
-    "revision": "900c4cb3dff707b46123",
-    "url": "/FaceRecognition-App/static/js/main.900c4cb3.chunk.js"
+    "revision": "c4b58efd50b44d44c065",
+    "url": "/FaceRecognition-App/static/js/main.c4b58efd.chunk.js"
   },
   {
     "revision": "9e021ee09f42408cf068",
     "url": "/FaceRecognition-App/static/js/2.9e021ee0.chunk.js"
   },
   {
-    "revision": "900c4cb3dff707b46123",
-    "url": "/FaceRecognition-App/static/css/main.88ecae4c.chunk.css"
+    "revision": "c4b58efd50b44d44c065",
+    "url": "/FaceRecognition-App/static/css/main.e3fdf1d1.chunk.css"
   },
   {
     "revision": "9e021ee09f42408cf068",
     "url": "/FaceRecognition-App/static/css/2.c75dffc6.chunk.css"
   },
   {
-    "revision": "f12e9451ef9b06a7ac811a96fe48976c",
+    "revision": "b0573f7ac39a01395a59b0fea4ff50ea",
     "url": "/FaceRecognition-App/index.html"
   }
 ];
