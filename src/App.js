@@ -8,25 +8,30 @@ import FaceRecognizer from './Components/FaceRecognizer/FaceRecognizer';
 import SignIn from './Components/SignIn/SignIn'
 import Register from './Components/Register/Register'
 import Particles from 'react-particles-js';
-import Clarifai from 'clarifai';
-const app = new Clarifai.App({
- apiKey: 'abedd40f642c492eaec1b1de12d07831'
-});
 
-class App extends Component {
-  constructor(){
-    super();
-    this.state={
-      input:'',
+const initialState={
+   input:'',
       imageURL:'',
       box:{},
       route:'signin',
       isSignedIn:false,
-    }
+      user:{
+          id:'',
+    name:'',
+    email:'',
+    entries:0,
+    joined:'',
+      },
+}
+
+class App extends Component {
+  constructor(){
+    super();
+    this.state=initialState;
   }
-  calculateFaceLocation=(input)=>{
+  
+alculateFaceLocation=(input)=>{
     const clarifaiFace=input.outputs[0].data.regions[0].region_info.bounding_box;
-    // console.log(clarifaiFace)
     const image=document.getElementById('inputImage');
     const width=Number(image.width);
     const height=Number(image.height);
@@ -37,8 +42,16 @@ class App extends Component {
         bottom_row:height-(clarifaiFace.bottom_row*height),
     };
   }
+  updateUser = (user)=>{
+    this.setState({user:{
+         id:user.id,
+    name:user.name,
+    email:user.email,
+    entries:user.entries,
+    joined:user.joined,
+    }})
+  }
   displayFaceBox=(box)=>{
-    // console.log(box)
     this.setState({box:box});
   }
   onInputChange=(event)=>{
@@ -47,18 +60,40 @@ class App extends Component {
   }
   onButtonSubmit=()=>{
     this.setState({imageURL:this.state.input});
-  app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
+  fetch('https://sheltered-harbor-27049.herokuapp.com/imageurl',{
+        method:'post',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(
+        {
+          input:this.state.input,
+        })})
+        .then(response=>response.json())
   .then((response)=> {
+     if(response){
+      fetch('https://sheltered-harbor-27049.herokuapp.com/image',{
+        method:'put',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(
+        {
+          id:this.state.user.id,
+        })
+      })
+      .then(response=>response.json())
+      .then(entries=>{
+        this.setState(Object.assign(this.state.user,{entries:entries}))})
+      .catch(console.log('not able to get entries'))
+     }
     this.displayFaceBox(
     this.calculateFaceLocation(response)
     );
+
      
     })
-  .catch(error=>console.log(error));
+  .catch(error=>console.log(error))
   }
   onRouteChange=(route)=>{
     if(route==='signout'){
-      this.setState({isSignedIn:false})
+      this.setState(initialState)
     }else if (route==='home') {
 
       this.setState({isSignedIn:true})
@@ -87,14 +122,14 @@ class App extends Component {
        { (route==='home')? 
        <div>
                <Logo/>
-               <Rank/>
+               <Rank name={this.state.user.name} entries={this.state.user.entries}/>
                <ImageLinkForm onButtonSubmit={this.onButtonSubmit} onInputChange={this.onInputChange}/>
                <FaceRecognizer box={box} imageURL={imageURL}/>
                </div>:
                ((route==='signin')  ?  
-                              <SignIn onRouteChange={this.onRouteChange}/>
+                              <SignIn onRouteChange={this.onRouteChange} updateUser={this.updateUser}/>
                               :
-                              <Register onRouteChange={this.onRouteChange}/>
+                              <Register onRouteChange={this.onRouteChange} updateUser={this.updateUser}/>
                               )
        }
         
